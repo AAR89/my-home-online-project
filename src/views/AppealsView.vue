@@ -1,7 +1,7 @@
 <template>
   <div class="appeals">
     <h1>Список заявок</h1>
-    <button @click="openModal">Создать заявку</button>
+    <button @click="openModal(null)">Создать заявку</button>
     <table>
       <thead>
         <tr>
@@ -61,12 +61,14 @@ export default {
   },
   methods: {
     ...mapActions(["fetchAppeals", "createAppeal", "updateAppeal"]),
-    openModal(appeal = null) {
+    openModal(appeal) {
       if (appeal) {
         this.isEditMode = true;
+        console.log(this.isEditMode);
         this.appealToEdit = appeal; // Передаем только объект заявки
       } else {
         this.isEditMode = false;
+        console.log(this.isEditMode);
         this.appealToEdit = {
           number: null,
           created_at: new Date().toLocaleString(),
@@ -81,6 +83,7 @@ export default {
       this.isModalVisible = true;
     },
     closeModal() {
+      this.isEditMode = false;
       this.isModalVisible = false;
     },
     async handleSave(updatedAppeal) {

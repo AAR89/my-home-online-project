@@ -145,8 +145,11 @@ export default {
 }
 
 form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px;
   background: white;
-  padding: 20px;
   border-radius: 8px;
 }
 
@@ -154,7 +157,7 @@ input,
 textarea {
   width: 100%;
   padding: 8px;
-  margin: 10px 0;
+  margin: 10px 0px 10px 0px;
   border-radius: 4px;
 }
 

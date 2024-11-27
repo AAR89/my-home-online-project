@@ -50,6 +50,7 @@ export default new Vuex.Store({
           }
         );
         commit("SET_APPEALS", response.data.results);
+        console.log(response.data.results);
       } catch (error) {
         console.error(error);
       }
@@ -63,7 +64,7 @@ export default new Vuex.Store({
             headers: { Authorization: `Token ${state.token}` },
           }
         );
-        commit("ADD_APPEAL", response.data); // Добавляем заявку в state
+        commit("ADD_APPEAL", response.data);
       } catch (error) {
         console.error("Ошибка при создании заявки", error);
       }
@@ -77,7 +78,7 @@ export default new Vuex.Store({
             headers: { Authorization: `Token ${state.token}` },
           }
         );
-        commit("UPDATE_APPEAL", response.data); // Обновляем заявку в state
+        commit("UPDATE_APPEAL", response.data);
       } catch (error) {
         console.error("Ошибка при обновлении заявки", error);
       }

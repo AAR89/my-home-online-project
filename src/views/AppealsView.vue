@@ -1,4 +1,3 @@
-<!-- eslint-disable prettier/prettier -->
 <template>
   <div class="appeals">
     <h1>Список заявок</h1>
@@ -36,11 +35,11 @@
       :is-edit-mode="isEditMode"
       :appeal-to-edit="appealToEdit"
       @close="closeModal"
+      @save="handleSave"
       @refresh="fetchAppeals"
     />
   </div>
 </template>
-<!-- eslint-disable prettier/prettier -->
 
 <script>
 import AppealModal from "@/components/AppealModal.vue";
@@ -61,23 +60,43 @@ export default {
     ...mapState(["appeals"]),
   },
   methods: {
-    ...mapActions(["fetchAppeals"]),
+    ...mapActions(["fetchAppeals", "createAppeal", "updateAppeal"]),
     openModal(appeal = null) {
       if (appeal) {
         this.isEditMode = true;
-        this.appealToEdit = appeal; // Убедитесь, что передаете объект заявки
+        this.appealToEdit = appeal; // Передаем только объект заявки
       } else {
         this.isEditMode = false;
-        this.appealToEdit = null;
+        this.appealToEdit = {
+          number: null,
+          created_at: new Date().toLocaleString(),
+          premise: "",
+          apartment: "",
+          applicant: "",
+          description: "",
+          due_date: "",
+          status: "Новый",
+        }; // Новый пустой объект для создания
       }
       this.isModalVisible = true;
     },
     closeModal() {
       this.isModalVisible = false;
     },
+    async handleSave(updatedAppeal) {
+      if (this.isEditMode) {
+        // Обновление существующей заявки
+        await this.updateAppeal(updatedAppeal);
+      } else {
+        // Создание новой заявки
+        await this.createAppeal(updatedAppeal);
+      }
+      this.closeModal();
+      this.fetchAppeals(); // Обновляем список заявок после сохранения
+    },
   },
   created() {
-    this.fetchAppeals();
+    this.fetchAppeals(); // Загружаем список заявок при монтировании компонента
   },
 };
 </script>

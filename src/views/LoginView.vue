@@ -4,12 +4,12 @@
     <h1>Вход</h1>
     <form @submit.prevent="submitForm">
       <div>
-        <label>Логин или Телефон</label>
-        <input type="text" v-model="username" required />
+        <label for="username">Логин или Телефон</label>
+        <input id="username" type="text" v-model="username" required />
       </div>
       <div>
-        <label>Пароль</label>
-        <input type="password" v-model="password" required />
+        <label for="password">Пароль</label>
+        <input id="password" type="password" v-model="password" required />
       </div>
       <button type="submit">Войти</button>
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -20,6 +20,7 @@
 
 <script>
 import { mapActions } from "vuex";
+
 export default {
   data() {
     return {

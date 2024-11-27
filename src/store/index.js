@@ -1,3 +1,4 @@
+// src/store/index.js
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
@@ -16,6 +17,15 @@ export default new Vuex.Store({
     },
     SET_APPEALS(state, appeals) {
       state.appeals = appeals;
+    },
+    ADD_APPEAL(state, appeal) {
+      state.appeals.push(appeal); // Добавление новой заявки в state
+    },
+    UPDATE_APPEAL(state, updatedAppeal) {
+      const index = state.appeals.findIndex((a) => a.id === updatedAppeal.id);
+      if (index !== -1) {
+        Vue.set(state.appeals, index, updatedAppeal); // Обновление заявки в state
+      }
     },
   },
   actions: {
@@ -42,6 +52,34 @@ export default new Vuex.Store({
         commit("SET_APPEALS", response.data.results);
       } catch (error) {
         console.error(error);
+      }
+    },
+    async createAppeal({ state, commit }, appeal) {
+      try {
+        const response = await axios.post(
+          "https://dev.moydomonline.ru/api/appeals/v1.0/appeals/",
+          appeal,
+          {
+            headers: { Authorization: `Token ${state.token}` },
+          }
+        );
+        commit("ADD_APPEAL", response.data); // Добавляем заявку в state
+      } catch (error) {
+        console.error("Ошибка при создании заявки", error);
+      }
+    },
+    async updateAppeal({ state, commit }, appeal) {
+      try {
+        const response = await axios.put(
+          `https://dev.moydomonline.ru/api/appeals/v1.0/appeals/${appeal.id}/`,
+          appeal,
+          {
+            headers: { Authorization: `Token ${state.token}` },
+          }
+        );
+        commit("UPDATE_APPEAL", response.data); // Обновляем заявку в state
+      } catch (error) {
+        console.error("Ошибка при обновлении заявки", error);
       }
     },
   },

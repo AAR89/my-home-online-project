@@ -1,8 +1,8 @@
 <template>
   <div v-if="isVisible" class="modal">
     <div v-if="localAppeal">
-      <h2>{{ isEditMode ? "Редактировать заявку" : "Создать заявку" }}</h2>
       <form @submit.prevent="saveAppeal">
+        <h2>{{ isEditMode ? "Редактировать заявку" : "Создать заявку" }}</h2>
         <div>
           <label for="lastName">Фамилия</label>
           <input v-model="lastName" id="lastName" type="text" />
@@ -29,10 +29,10 @@
         </div>
         <div>
           <button type="submit">Сохранить</button>
+          <button @click="closeModal">Закрыть</button>
         </div>
       </form>
     </div>
-    <button @click="closeModal">Закрыть</button>
   </div>
 </template>
 

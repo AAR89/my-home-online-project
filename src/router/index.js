@@ -14,7 +14,7 @@ const router = new Router({
       component: Login,
     },
     {
-      path: "/",
+      path: "*",
       name: "Appeals",
       component: Appeals,
       meta: { requiresAuth: true },

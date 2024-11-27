@@ -132,7 +132,6 @@ export default {
 
 <style scoped>
 .modal {
-  /* Пример стилей для модального окна */
   position: fixed;
   top: 0;
   left: 0;

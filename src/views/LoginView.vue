@@ -64,7 +64,7 @@ export default {
         await this.login({ username: this.username, password: this.password });
         this.$router.push("/");
       } catch (error) {
-        this.errorMessage = "Неверные логи или пароль";
+        this.errorMessage = "Неверные логин или пароль";
       }
     },
   },

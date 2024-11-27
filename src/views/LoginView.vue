@@ -16,7 +16,14 @@
                 <label class="login-phone-container_title" for="username"
                   >Логин или Телефон</label
                 >
-                <input id="username" type="text" v-model="username" required />
+                <input
+                  id="username"
+                  type="text"
+                  v-model="phone"
+                  @input="formatPhone"
+                  maxlength="12"
+                  required
+                />
               </div>
             </div>
             <div class="login-password">
@@ -24,15 +31,25 @@
               <div>
                 <input
                   id="password"
-                  type="password"
+                  :type="isPasswordVisible ? 'text' : 'password'"
                   v-model="password"
                   required
                   placeholder="Пароль"
                 />
+
                 <img
+                  v-if="isPasswordVisible"
+                  class="login-password-no-vision"
+                  src="../../public/vision.png"
+                  alt="Toggle password visibility"
+                  @click="togglePasswordVisibility"
+                />
+                <img
+                  v-else
                   class="login-password-no-vision"
                   src="../../public/no-vision.png"
-                  alt="No vision icon"
+                  alt="Toggle password visibility"
+                  @click="togglePasswordVisibility"
                 />
               </div>
             </div>
@@ -53,8 +70,10 @@ export default {
   data() {
     return {
       username: "",
+      phone: "+7",
       password: "",
       errorMessage: "",
+      isPasswordVisible: false,
     };
   },
   methods: {
@@ -66,6 +85,17 @@ export default {
       } catch (error) {
         this.errorMessage = "Неверные логин или пароль";
       }
+    },
+    formatPhone() {
+      if (this.phone.startsWith("8")) {
+        this.phone = "+7";
+      }
+      const cleaned = this.phone.replace(/[^0-9]/g, "").slice(1);
+      this.phone = `+7${cleaned.slice(0, 10)}`;
+      this.username = `7${cleaned.slice(0, 10)}`;
+    },
+    togglePasswordVisibility() {
+      this.isPasswordVisible = !this.isPasswordVisible;
     },
   },
 };
@@ -133,7 +163,7 @@ export default {
       flex-direction: column;
       gap: 16px;
       position: relative;
-      padding-top: 52px;
+      padding-top: 32px;
       align-items: center;
     }
 
@@ -212,14 +242,12 @@ export default {
     }
   }
 
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* Устанавливает белый фон */
-    box-shadow: 0 0 0px 1000px white inset !important;
-    background-color: white !important; /* Дополнительная защита */
-    color: #333333 !important; /* Цвет текста */
+  #password,
+  #username {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    box-shadow: 0 0 0px 1000px white inset;
+    background-color: white;
+    color: #8c8c8c;
     border: 0px solid #ffffff;
     padding: 5px 0px 0px 0px;
     font-family: "Roboto";
@@ -229,7 +257,14 @@ export default {
     text-align: left;
     text-decoration-skip-ink: none;
     width: 248px;
-    border: 0px solid #ffffff;
+  }
+  #password {
+    padding-left: 5px;
+  }
+  input:focus {
+    outline: none; /* Убираем черную рамку */
+    border: 1px solid #4caf50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
   }
 }
 

@@ -64,11 +64,9 @@ export default {
     openModal(appeal) {
       if (appeal) {
         this.isEditMode = true;
-        console.log(this.isEditMode);
         this.appealToEdit = appeal; // Передаем только объект заявки
       } else {
         this.isEditMode = false;
-        console.log(this.isEditMode);
         this.appealToEdit = {
           number: null,
           created_at: new Date().toLocaleString(),

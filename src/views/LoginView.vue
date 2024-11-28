@@ -262,7 +262,7 @@ export default {
     padding-left: 5px;
   }
   input:focus {
-    outline: none; /* Убираем черную рамку */
+    outline: none;
     border: 1px solid #4caf50;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
   }

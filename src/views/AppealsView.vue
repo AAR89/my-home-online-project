@@ -63,7 +63,6 @@
             </tr>
           </tbody>
         </table>
-        <!-- <div class="pagination-wrapper"> -->
         <div class="pagination">
           <div>
             <button @click="prevPage" :disabled="currentPage === 1">
@@ -75,7 +74,6 @@
             </button>
           </div>
         </div>
-        <!-- </div> -->
       </section>
     </div>
     <appeal-modal

@@ -422,23 +422,14 @@ export default {
     opacity: 1;
   }
 
-  // .pagination-wrapper {
-  //   position: sticky;
-  //   bottom: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   background-color: white;
-  //   padding: 0 15px;
-  //   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-
   .pagination {
     position: sticky;
     bottom: 0;
     background-color: white;
     display: flex;
-    padding: 10px 20px 10px 20px;
+    padding: 0px 20px 0px 20px;
     justify-content: space-between;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    // box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   }
 
   .pagination button {
@@ -456,5 +447,4 @@ export default {
     cursor: not-allowed;
   }
 }
-// }
 </style>

@@ -262,8 +262,8 @@ export default {
   .description-text {
     visibility: hidden;
     width: 200px;
-    background-color: #50b053;
-    color: #fff;
+    background-color: #eeeeee;
+    color: #333333;
     text-align: center;
     border-radius: 5px;
     padding: 5px;
@@ -356,7 +356,7 @@ export default {
 
   .description-text::after {
     transform: translateX(-50%);
-    border-color: transparent transparent #50b053 transparent;
+    border-color: transparent transparent #eeeeee transparent;
   }
 
   .status-cell:hover .tooltip,

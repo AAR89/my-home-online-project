@@ -45,12 +45,10 @@ export default {
   },
   data() {
     return {
-      // Локальная копия данных, чтобы не изменять пропс напрямую
       localAppeal: { ...this.appealToEdit },
     };
   },
   computed: {
-    // Вычисляемые свойства для каждого поля
     lastName: {
       get() {
         return this.localAppeal.applicant
@@ -114,7 +112,6 @@ export default {
   },
   watch: {
     appealToEdit(newAppeal) {
-      // Если данные в пропсе изменяются, обновляем локальную копию
       this.localAppeal = { ...newAppeal };
     },
   },
@@ -123,7 +120,6 @@ export default {
       this.$emit("close");
     },
     saveAppeal() {
-      // Передаем обновленные данные родительскому компоненту
       this.$emit("save-appeal", this.localAppeal);
     },
   },

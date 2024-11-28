@@ -12,6 +12,10 @@ html {
   box-sizing: border-box;
 }
 
+li {
+  list-style-type: none;
+}
+
 #app {
   // -webkit-font-smoothing: antialiased;
   // -moz-osx-font-smoothing: grayscale;

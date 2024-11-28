@@ -63,7 +63,7 @@
             </tr>
           </tbody>
         </table>
-        <div class="pagination">
+        <!-- <div class="pagination">
           <div>
             <button @click="prevPage" :disabled="currentPage === 1">
               Назад
@@ -73,7 +73,15 @@
               Вперед
             </button>
           </div>
-        </div>
+        </div> -->
+        <b-pagination
+          class="pagination"
+          v-model="currentPage"
+          :total-rows="appeals.length"
+          :per-page="perPage"
+          aria-controls="appeals-table"
+          pills
+        ></b-pagination>
       </section>
     </div>
     <appeal-modal
@@ -88,36 +96,40 @@
 </template>
 
 <script>
-import AppealModal from "@/components/AppealModal.vue";
 import { mapState, mapActions } from "vuex";
 import { format } from "date-fns";
+// import Pagination from "vue-pagination-2";
+import AppealModal from "@/components/AppealModal.vue";
 
 export default {
   components: {
     AppealModal,
+    // Pagination,
   },
   data() {
     return {
       isModalVisible: false,
       isEditMode: false,
       appealToEdit: null,
-      currentPage: 1,
-      itemsPerPage: 10,
+      currentPage: 1, // Текущая страница
+      perPage: 10, // Количество элементов на странице
     };
   },
   computed: {
     ...mapState(["appeals"]),
     totalPages() {
-      return Math.ceil(this.appeals.length / this.itemsPerPage);
+      return Math.ceil(this.appeals.length / this.perPage);
     },
     paginatedAppeals() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      return this.appeals.slice(start, start + this.itemsPerPage);
+      const start = (this.currentPage - 1) * this.perPage;
+      return this.appeals.slice(start, start + this.perPage);
     },
   },
   methods: {
     ...mapActions(["fetchAppeals", "createAppeal", "updateAppeal"]),
-
+    changePage(page) {
+      this.currentPage = page;
+    },
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
@@ -425,24 +437,53 @@ export default {
     bottom: 0;
     background-color: white;
     display: flex;
-    padding: 0px 20px 0px 20px;
-    justify-content: space-between;
+    justify-content: flex-end;
     // box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   }
 
-  .pagination button {
-    padding: 5px 15px;
-    margin: 0 5px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  ::v-deep(.pagination ul) {
+    border: 1px solid #ffffff;
   }
 
-  .pagination button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  ::v-deep(.pagination button) {
+    color: #6c757d;
+    border: white;
   }
+
+  /* Кнопка в момент нажатия */
+  ::v-deep .pagination button active {
+    color: #ffffff;
+    background-color: #50b053;
+  }
+
+  /* Кнопка, которая остаётся активной после нажатия, если ей был добавлен фокус */
+  ::v-deep .pagination button:focus {
+    color: #ffffff;
+    background-color: #50b053;
+  }
+
+  ::v-deep(
+      .pagination button:hover,
+      .pagination button:active,
+      .pagination button:target
+    ) {
+    color: #ffffff;
+    background-color: #50b053;
+  }
+
+  // .pagination button {
+  //   padding: 5px 15px;
+  //   margin: 0 5px;
+  //   background-color: #007bff;
+  //   color: white;
+  //   border: none;
+  //   border-radius: 4px;
+  //   cursor: pointer;
+  // }
+
+  // .pagination button:disabled {
+  //   background-color: #ccc;
+  //   cursor: not-allowed;
+  // }
 }
 </style>

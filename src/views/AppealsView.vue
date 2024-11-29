@@ -63,25 +63,40 @@
             </tr>
           </tbody>
         </table>
-        <!-- <div class="pagination">
-          <div>
-            <button @click="prevPage" :disabled="currentPage === 1">
-              Назад
-            </button>
-            <span>Страница {{ currentPage }} из {{ totalPages }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages">
-              Вперед
-            </button>
+        <nav class="pagination-container">
+          <div class="pages-container">
+            <div class="pagination-info">
+              {{ (currentPage - 1) * perPage + 1 }}
+              <div class="info-small">–</div>
+              {{ paginatedAppeals.length }}
+              <div class="info-small">из</div>
+              {{ appeals.length }}
+              <div class="info-small">записей</div>
+            </div>
+            <select
+              v-model="perPage"
+              @change="handlePerPageChange"
+              class="per-page-selector"
+            >
+              <option
+                v-for="option in appeals.length / 10"
+                :key="option"
+                :value="option * 10"
+              >
+                {{ option * 10 }}
+              </option>
+            </select>
           </div>
-        </div> -->
-        <b-pagination
-          class="pagination"
-          v-model="currentPage"
-          :total-rows="appeals.length"
-          :per-page="perPage"
-          aria-controls="appeals-table"
-          pills
-        ></b-pagination>
+          <b-pagination
+            class="pagination"
+            v-model="currentPage"
+            :total-rows="appeals.length"
+            :per-page="perPage"
+            aria-controls="appeals-table"
+            pills
+            size="sm"
+          />
+        </nav>
       </section>
     </div>
     <appeal-modal
@@ -127,6 +142,9 @@ export default {
   },
   methods: {
     ...mapActions(["fetchAppeals", "createAppeal", "updateAppeal"]),
+    handlePerPageChange() {
+      this.currentPage = 1; // Сбрасываем на первую страницу при изменении количества записей
+    },
     changePage(page) {
       this.currentPage = page;
     },
@@ -432,58 +450,113 @@ export default {
     opacity: 1;
   }
 
-  .pagination {
+  .pagination-container {
     position: sticky;
     bottom: 0;
     background-color: white;
+    width: 100%;
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+
+    .pages-container {
+      display: flex;
+      gap: 16px;
+      padding-bottom: 10px;
+      .pagination-info {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        padding-left: 5px;
+        font-family: Roboto;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 16.41px;
+        text-underline-position: from-font;
+        color: #333333;
+
+        .info-small {
+          font-family: Roboto;
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 18px;
+          text-underline-position: from-font;
+          color: #333333;
+        }
+      }
+
+      .per-page-selector {
+        width: 90px;
+        padding: 4px 8px;
+        font-family: Roboto;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        border: white;
+        border-bottom: 1px solid #cccccc;
+        color: #333333;
+        appearance: none;
+        overflow: hidden;
+        background: url("../../public/Rectangle.png") no-repeat right;
+
+        option {
+          font-family: Roboto;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 20px;
+          color: #333333;
+        }
+
+        option:hover {
+          background-color: #50b053;
+        }
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: space-between;
     // box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    width: 40%;
   }
 
-  ::v-deep(.pagination ul) {
-    border: 1px solid #ffffff;
-  }
-
-  ::v-deep(.pagination button) {
+  ::v-deep .pagination > li > button,
+  ::v-deep .pagination > li.disabled > span {
+    background-color: white;
+    border-color: white;
     color: #6c757d;
-    border: white;
+    font-family: Roboto;
   }
 
-  /* Кнопка в момент нажатия */
-  ::v-deep .pagination button active {
+  ::v-deep .pagination > li > button:focus {
+    background: #50b053;
     color: #ffffff;
-    background-color: #50b053;
+    box-shadow: 0 0 0 0.25rem white;
   }
 
-  /* Кнопка, которая остаётся активной после нажатия, если ей был добавлен фокус */
-  ::v-deep .pagination button:focus {
-    color: #ffffff;
-    background-color: #50b053;
+  ::v-deep .pagination > li > button:hover {
+    border-color: #50b053;
+    color: #50b053;
   }
 
-  ::v-deep(
-      .pagination button:hover,
-      .pagination button:active,
-      .pagination button:target
-    ) {
-    color: #ffffff;
-    background-color: #50b053;
+  ::v-deep .pagination > li.active > button {
+    color: white;
+    background-color: #50b053 !important;
+    border: solid 1px #50b053 !important;
   }
 
-  // .pagination button {
-  //   padding: 5px 15px;
-  //   margin: 0 5px;
-  //   background-color: #007bff;
-  //   color: white;
-  //   border: none;
-  //   border-radius: 4px;
-  //   cursor: pointer;
+  // ::v-deep .pagination > .active > button:hover {
+  //   background-color: #50b053 !important;
+  //   border: solid 1px #50b053;
+  //   color: #ffffff;
   // }
 
-  // .pagination button:disabled {
-  //   background-color: #ccc;
-  //   cursor: not-allowed;
-  // }
+  ::v-deep .pagination > .page-item:disabled {
+    background-color: #ffffff !important;
+  }
 }
 </style>

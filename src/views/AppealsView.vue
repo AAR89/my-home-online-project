@@ -40,11 +40,27 @@
               <section class="td-number-section">
                 <button class="number-button">{{ appeal.number }}</button>
               </section>
-              <td>{{ formatDate(appeal.created_at) }}</td>
+              <td>{{ formatDate(appeal.created_at, "create") }}</td>
               <td>
-                {{ "нет информации" || appeal.apartment?.label }}
+                {{
+                  appeal.premise?.address && appeal.apartment?.label
+                    ? appeal.premise?.address + " ," + appeal.apartment?.label
+                    : "нет информации"
+                }}
               </td>
-              <td>{{ appeal.applicant ? appeal.applicant?.username : "" }}</td>
+              <td>
+                {{
+                  appeal.applicant?.first_name ||
+                  appeal.applicant?.last_name ||
+                  appeal.applicant?.username
+                    ? appeal.applicant?.first_name +
+                      " " +
+                      appeal.applicant?.last_name +
+                      " " +
+                      appeal.applicant?.username
+                    : "нет информации"
+                }}
+              </td>
               <td class="description">
                 {{ truncateText(appeal.description, 30) }}
                 <span
@@ -54,7 +70,7 @@
                   {{ appeal.description }}
                 </span>
               </td>
-              <td>{{ formatDate(appeal.due_date) }}</td>
+              <td>{{ formatDate(appeal.due_date, "due-date") }}</td>
               <td
                 :class="{
                   'red-status': appeal.status.is_red_details,
@@ -124,7 +140,6 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { format } from "date-fns";
-// import Pagination from "vue-pagination-2";
 import AppealModal from "@/components/AppealModal.vue";
 
 export default {
@@ -140,6 +155,7 @@ export default {
       perPage: 10,
       sortDirection: "asc",
       currentSort: "",
+      type: "",
     };
   },
   computed: {
@@ -148,22 +164,19 @@ export default {
       return Math.ceil(this.appeals.length / this.perPage);
     },
     paginatedAppeals() {
-      const sortedAppeals = [...this.appeal].sort((a, b) => {
+      const sortedAppeals = [...this.appeals].sort((a, b) => {
         let statusA = "";
         let statusB = "";
 
         if (a.status && typeof a.status.name === "string") {
-          statusA = a.status.name.trim().toLowerCase();
+          statusA = a.status.name.trim().toLowerCase(); // Приводим к нижнему регистру и удаляем пробелы
         }
         if (b.status && typeof b.status.name === "string") {
           statusB = b.status.name.trim().toLowerCase();
         }
 
-        console.log("statusA:", statusA, "statusB:", statusB);
-
         if (this.currentSort === "status") {
           const compareResult = statusA.localeCompare(statusB);
-          console.log("compareResult for status:", compareResult);
           return this.sortDirection === "asc" ? compareResult : -compareResult;
         }
 
@@ -174,8 +187,6 @@ export default {
           ? String(fieldA).localeCompare(String(fieldB))
           : String(fieldB).localeCompare(String(fieldA));
       });
-
-      console.log("Sorted Appeals:", sortedAppeals); // Выводим отсортированные данные
 
       const start = (this.currentPage - 1) * this.perPage;
       return sortedAppeals.slice(start, start + this.perPage);
@@ -220,7 +231,10 @@ export default {
       return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
     },
 
-    formatDate(dateString) {
+    formatDate(dateString, type) {
+      if (type === "due-date") {
+        return format(new Date(dateString), "dd.MM.yyyy hh:mm");
+      }
       if (!dateString) return "нет информации";
       return format(new Date(dateString), "dd.MM.yyyy");
     },
@@ -306,6 +320,7 @@ export default {
     padding: 10px 20px 10px 20px;
     border-radius: 8px;
     background-color: #ffffff;
+    margin-bottom: 22px;
 
     .create-section {
       width: 100%;
@@ -326,6 +341,10 @@ export default {
         color: #ffffff;
       }
     }
+  }
+
+  tr {
+    box-shadow: 0px -1px 0px 0px #dddfe0 inset;
   }
 
   th,
@@ -352,7 +371,6 @@ export default {
     font-family: "Inter";
     font-size: 14px;
     font-weight: 400;
-    line-height: 20px;
     text-align: left;
     text-underline-position: from-font;
     color: #333333;
@@ -360,8 +378,7 @@ export default {
   }
 
   .td-number-section {
-    width: Fill (100px) px;
-    height: Fixed (58px) px;
+    width: 100px;
     padding: 15px 40px 15px 4px;
     gap: 8px;
     opacity: 0px;
@@ -443,27 +460,6 @@ export default {
     transition: opacity 0.3s ease;
   }
 
-  .tooltip2 {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    visibility: hidden;
-    opacity: 0;
-    background-color: #50b053;
-    color: white;
-    text-align: center;
-    border-radius: 4px;
-    padding: 5px 10px;
-    position: absolute;
-    z-index: 10;
-    bottom: -25%;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    font-size: 12px;
-    transition: opacity 0.3s ease;
-  }
-
   .tooltip-text {
     visibility: hidden;
     font-family: "Inter";
@@ -519,6 +515,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-top: 10px;
 
     .pages-container {
       display: flex;

@@ -48,6 +48,7 @@ export default new Vuex.Store({
             headers: { Authorization: `Token ${state.token}` },
           }
         );
+        console.log(response.data.results);
         commit("SET_APPEALS", response.data.results);
       } catch (error) {
         console.error(error);

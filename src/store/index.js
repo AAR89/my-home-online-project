@@ -49,7 +49,6 @@ export default new Vuex.Store({
           }
         );
         commit("SET_APPEALS", response.data.results);
-        console.log(response.data.results);
       } catch (error) {
         console.error(error);
       }

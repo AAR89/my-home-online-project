@@ -11,13 +11,24 @@
         <table>
           <thead>
             <tr>
-              <th>№</th>
-              <th>Создана</th>
+              <th class="th-sort" @click="sortTable('number')">
+                №
+                <span v-if="currentSort === 'number'">{{ sortDirection }}</span>
+              </th>
+              <th class="th-sort" @click="sortTable('created_at')">
+                Создана
+                <span v-if="currentSort === 'created_at'">{{
+                  sortDirection
+                }}</span>
+              </th>
               <th>Адрес</th>
               <th>Заявитель</th>
               <th>Описание</th>
               <th>Срок</th>
-              <th>Статус</th>
+              <th class="th-sort" @click="sortTable('status')">
+                Статус
+                <span v-if="currentSort === 'status'">{{ sortDirection }}</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -119,15 +130,16 @@ import AppealModal from "@/components/AppealModal.vue";
 export default {
   components: {
     AppealModal,
-    // Pagination,
   },
   data() {
     return {
       isModalVisible: false,
       isEditMode: false,
       appealToEdit: null,
-      currentPage: 1, // Текущая страница
-      perPage: 10, // Количество элементов на странице
+      currentPage: 1,
+      perPage: 10,
+      sortDirection: "asc",
+      currentSort: "",
     };
   },
   computed: {
@@ -136,12 +148,55 @@ export default {
       return Math.ceil(this.appeals.length / this.perPage);
     },
     paginatedAppeals() {
+      const sortedAppeals = [...this.appeal].sort((a, b) => {
+        let statusA = "";
+        let statusB = "";
+
+        if (a.status && typeof a.status.name === "string") {
+          statusA = a.status.name.trim().toLowerCase();
+        }
+        if (b.status && typeof b.status.name === "string") {
+          statusB = b.status.name.trim().toLowerCase();
+        }
+
+        console.log("statusA:", statusA, "statusB:", statusB);
+
+        if (this.currentSort === "status") {
+          const compareResult = statusA.localeCompare(statusB);
+          console.log("compareResult for status:", compareResult);
+          return this.sortDirection === "asc" ? compareResult : -compareResult;
+        }
+
+        const fieldA = this.getField(a, this.currentSort);
+        const fieldB = this.getField(b, this.currentSort);
+
+        return this.sortDirection === "asc"
+          ? String(fieldA).localeCompare(String(fieldB))
+          : String(fieldB).localeCompare(String(fieldA));
+      });
+
+      console.log("Sorted Appeals:", sortedAppeals); // Выводим отсортированные данные
+
       const start = (this.currentPage - 1) * this.perPage;
-      return this.appeals.slice(start, start + this.perPage);
+      return sortedAppeals.slice(start, start + this.perPage);
     },
   },
   methods: {
     ...mapActions(["fetchAppeals", "createAppeal", "updateAppeal"]),
+    getField(appeal, field) {
+      if (field === "status") {
+        return appeal.status?.name || "";
+      }
+      return appeal[field] || "";
+    },
+    sortTable(column) {
+      if (this.currentSort === column) {
+        this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
+      } else {
+        this.currentSort = column;
+        this.sortDirection = "asc";
+      }
+    },
     handlePerPageChange() {
       this.currentPage = 1; // Сбрасываем на первую страницу при изменении количества записей
     },
@@ -273,7 +328,8 @@ export default {
     }
   }
 
-  th {
+  th,
+  .th-sort {
     font-family: Roboto;
     font-size: 14px;
     font-weight: 400;
@@ -283,6 +339,11 @@ export default {
     text-decoration-skip-ink: none;
     color: #50b053;
     padding: 12px 8px 12px 8px;
+    cursor: pointer;
+  }
+
+  .th-sort {
+    background: url("../../public/arrow_upward_alt.png") no-repeat right;
   }
 
   td,
@@ -548,12 +609,6 @@ export default {
     background-color: #50b053 !important;
     border: solid 1px #50b053 !important;
   }
-
-  // ::v-deep .pagination > .active > button:hover {
-  //   background-color: #50b053 !important;
-  //   border: solid 1px #50b053;
-  //   color: #ffffff;
-  // }
 
   ::v-deep .pagination > .page-item:disabled {
     background-color: #ffffff !important;

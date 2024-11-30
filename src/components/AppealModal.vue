@@ -1,6 +1,15 @@
 <template>
   <div v-if="isVisible" class="modal">
     <form class="modal-form" v-if="localAppeal" @submit.prevent="saveAppeal">
+      <div class="modal-close">
+        <!-- <p class="modal-close-button" @click="closeModal()">Закрыть</p> -->
+        <img
+          @click="closeModal()"
+          class="modal-close-button"
+          src="../../public/close.png"
+          alt="Close icon"
+        />
+      </div>
       <header class="modal-header">
         <h2 class="modal-header-title">
           {{ !isEditMode ? "Создание заявки" : "Переменная с номером заявки" }}
@@ -187,12 +196,30 @@ export default {
   align-items: center;
 
   .modal-form {
+    position: absolute;
     width: 738px;
-    height: 480px;
     padding: 24px 32px 24px 32px;
     gap: 24px;
     border-radius: 8px;
     background-color: #ffffff;
+
+    .modal-close {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+
+      .modal-close-button {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: 0.3s;
+      }
+
+      .modal-close-button:hover {
+        opacity: 1;
+      }
+    }
 
     .modal-header {
       display: flex;

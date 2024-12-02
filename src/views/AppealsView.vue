@@ -78,11 +78,7 @@
                 }"
                 class="status-cell"
               >
-                {{
-                  appeal.status.is_red_details
-                    ? "Просрочено"
-                    : appeal.status.name
-                }}
+                {{ appeal.status.name }}
                 <span v-if="appeal.status.is_red_details" class="tooltip">
                   {{ appeal.status.short_details }}
                 </span>
@@ -252,7 +248,7 @@ export default {
           apartment: "",
           applicant: "",
           description: "",
-          due_date: "",
+          due_date: format(new Date(), "yyyy-MM-dd'T'hh:mm"),
           status: "Новый",
         };
       }

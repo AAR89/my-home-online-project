@@ -19,7 +19,7 @@
           {{
             !isEditMode
               ? "Создание заявки"
-              : `${number}(от ${formatDate(created_at, "create")})`
+              : `Заявка № ${number} (от ${formatDate(created_at, "create")})`
           }}
         </h2>
         <h1
@@ -73,7 +73,7 @@
           <div class="input-block">
             <p class="input-block-title">Описание заявки</p>
             <textarea
-              v-model="dueDate"
+              :v-model="description"
               id="dueDate"
               class="modal-fields-inputs-description"
               type="text"
@@ -81,8 +81,8 @@
           </div>
         </section>
         <section class="modal-button-block">
-          <button @click="saveAppeal()" class="modal-button-block-save">
-            Сохранить
+          <button type="submit" class="modal-button-block-save">
+            {{ "Создать" }}
           </button>
         </section>
       </div>
@@ -107,6 +107,7 @@
             <input
               class="modal-fields-inputs"
               type="datetime-local"
+              :v-model="formatDate(due_date, 'due-date')"
               :value="formatDate(due_date, 'due-date')"
             />
           </div>
@@ -158,7 +159,9 @@
           </div>
         </section>
         <section class="modal-button-block">
-          <button class="modal-button-block-save">Сохранить</button>
+          <button type="submit" class="modal-button-block-save">
+            {{ "Сохранить" }}
+          </button>
         </section>
       </div>
     </form>
@@ -196,7 +199,7 @@ export default {
     },
     status: {
       get() {
-        return this.localAppeal.status?.is_red_details ? "Просрочено" : "Новая";
+        return this.localAppeal.status.name;
       },
     },
     address: {
@@ -278,7 +281,7 @@ export default {
     },
     description: {
       get() {
-        return this.localAppeal.description || "";
+        return this.localAppeal.description ? this.localAppeal.description : "";
       },
       set(value) {
         this.localAppeal.description = value;

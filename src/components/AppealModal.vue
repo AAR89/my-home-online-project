@@ -1,8 +1,12 @@
 <template>
   <div v-if="isVisible" class="modal">
-    <form class="modal-form" v-if="localAppeal" @submit.prevent="saveAppeal">
+    <form
+      id="modal-form"
+      class="modal-form"
+      v-if="localAppeal"
+      @submit.prevent="saveAppeal"
+    >
       <div class="modal-close">
-        <!-- <p class="modal-close-button" @click="closeModal()">Закрыть</p> -->
         <img
           @click="closeModal()"
           class="modal-close-button"
@@ -12,88 +16,158 @@
       </div>
       <header class="modal-header">
         <h2 class="modal-header-title">
-          {{ !isEditMode ? "Создание заявки" : "Переменная с номером заявки" }}
+          {{
+            !isEditMode
+              ? "Создание заявки"
+              : `${number}(от ${formatDate(created_at, "create")})`
+          }}
         </h2>
-        <h1 class="modal-header-status">
-          {{ !isEditMode ? "Новая" : "Переменная со статусом заявки" }}
+        <h1
+          v-show="isEditMode"
+          class="modal-header-status"
+          :class="{
+            'red-status': this.localAppeal.status.is_red_details,
+            'green-status': !this.localAppeal.status.is_red_details,
+          }"
+        >
+          {{ status }}
+        </h1>
+        <h1 v-show="!isEditMode" class="modal-header-status">
+          {{ "Новая" }}
         </h1>
       </header>
-      <section v-show="!isEditMode" class="modal-fields">
-        <div class="input-block">
-          <p class="input-block-title">Дом</p>
-          <input class="modal-fields-inputs" type="text" />
-        </div>
-        <div class="input-block">
-          <p class="input-block-title">Квартира</p>
-          <input class="modal-fields-inputs" type="number" min="1" />
-        </div>
-        <div class="input-block">
-          <p class="input-block-title">Срок</p>
-          <input class="modal-fields-inputs" type="datetime-local" />
-        </div>
-      </section>
-      <section v-show="!isEditMode" class="modal-fields">
-        <div class="input-block">
-          <p class="input-block-title">Фамилия</p>
-          <input class="modal-fields-inputs-contact" type="text" />
-        </div>
-        <div class="input-block">
-          <p class="input-block-title">Имя</p>
-          <input class="modal-fields-inputs-contact" type="text" />
-        </div>
-        <div class="input-block">
-          <p class="input-block-title">Отчество</p>
-          <input class="modal-fields-inputs-contact" type="text" />
-        </div>
-        <div class="input-block">
-          <p class="input-block-title">Телефон</p>
-          <input class="modal-fields-inputs-contact" type="tel" />
-        </div>
-      </section>
-      <section v-show="!isEditMode" class="modal-fields-description">
-        <div class="input-block">
-          <p class="input-block-title">Описание заявки</p>
-          <textarea class="modal-fields-inputs-description" type="text" />
-        </div>
-      </section>
-      <section class="modal-button-block">
-        <button class="modal-button-block-save">Сохранить</button>
-      </section>
+      <div v-show="!isEditMode" class="editMode-container">
+        <section class="modal-fields">
+          <div class="input-block">
+            <p class="input-block-title">Дом</p>
+            <input class="modal-fields-inputs" type="text" />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Квартира</p>
+            <input class="modal-fields-inputs" type="number" min="1" />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Срок</p>
+            <input class="modal-fields-inputs" type="datetime-local" />
+          </div>
+        </section>
+        <section class="modal-fields">
+          <div class="input-block">
+            <p class="input-block-title">Фамилия</p>
+            <input class="modal-fields-inputs-contact" type="text" />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Имя</p>
+            <input class="modal-fields-inputs-contact" type="text" />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Отчество</p>
+            <input class="modal-fields-inputs-contact" type="text" />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Телефон</p>
+            <input class="modal-fields-inputs-contact" type="tel" />
+          </div>
+        </section>
+        <section class="modal-fields-description">
+          <div class="input-block">
+            <p class="input-block-title">Описание заявки</p>
+            <textarea
+              v-model="dueDate"
+              id="dueDate"
+              class="modal-fields-inputs-description"
+              type="text"
+            />
+          </div>
+        </section>
+        <section class="modal-button-block">
+          <button @click="saveAppeal()" class="modal-button-block-save">
+            Сохранить
+          </button>
+        </section>
+      </div>
 
-      <!-- <h2>{{ isEditMode ? "Редактировать заявку" : "Создать заявку" }}</h2>
-        <div>
-          <label for="lastName">Фамилия</label>
-          <input v-model="lastName" id="lastName" type="text" />
-        </div>
-        <div>
-          <label for="firstName">Имя</label>
-          <input v-model="firstName" id="firstName" type="text" />
-        </div>
-        <div>
-          <label for="patronymicName">Отчество</label>
-          <input v-model="patronymicName" id="patronymicName" type="text" />
-        </div>
-        <div>
-          <label for="phone">Телефон</label>
-          <input v-model="phone" id="phone" type="text" />
-        </div>
-        <div>
-          <label for="description">Описание</label>
-          <textarea v-model="description" id="description"></textarea>
-        </div>
-        <div>
-          <label for="dueDate">Срок</label>
-          <input v-model="dueDate" id="dueDate" type="datetime-local" />
-        </div>
-        <div>
-          <button type="submit">Сохранить</button>
-          <button @click="closeModal">Закрыть</button>
-        </div> -->
+      <div v-show="isEditMode" class="editMode-container">
+        <section class="modal-fields">
+          <div class="input-block">
+            <p class="input-block-title">Дом</p>
+            <input class="modal-fields-inputs" type="text" v-model="address" />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Квартира</p>
+            <input
+              class="modal-fields-inputs"
+              type="number"
+              v-model="apartment"
+              min="1"
+            />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Срок</p>
+            <input
+              class="modal-fields-inputs"
+              type="datetime-local"
+              :value="formatDate(due_date, 'due-date')"
+            />
+          </div>
+        </section>
+        <section class="modal-fields">
+          <div class="input-block">
+            <p class="input-block-title">Фамилия</p>
+            <input
+              class="modal-fields-inputs-contact"
+              type="text"
+              v-model="lastName"
+            />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Имя</p>
+            <input
+              class="modal-fields-inputs-contact"
+              type="text"
+              v-model="firstName"
+            />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Отчество</p>
+
+            <input
+              class="modal-fields-inputs-contact"
+              type="text"
+              v-model="patronymicName"
+            />
+          </div>
+          <div class="input-block">
+            <p class="input-block-title">Телефон</p>
+            <input
+              class="modal-fields-inputs-contact"
+              type="tel"
+              v-model="phone"
+            />
+          </div>
+        </section>
+        <section class="modal-fields-description">
+          <div class="input-block">
+            <p class="input-block-title">Описание заявки</p>
+            <textarea
+              v-model="description"
+              id="dueDate"
+              class="modal-fields-inputs-description"
+              type="text"
+            />
+          </div>
+        </section>
+        <section class="modal-button-block">
+          <button class="modal-button-block-save">Сохранить</button>
+        </section>
+      </div>
     </form>
   </div>
 </template>
 
 <script>
+import { format } from "date-fns";
+
 export default {
   props: {
     isVisible: Boolean,
@@ -106,6 +180,58 @@ export default {
     };
   },
   computed: {
+    number: {
+      get() {
+        return this.localAppeal.number ? this.localAppeal.number : "";
+      },
+    },
+    created_at: {
+      get() {
+        return this.localAppeal.created_at ? this.localAppeal.created_at : "";
+      },
+      set(value) {
+        if (!this.localAppeal.created_at) this.created_at.applicant = {};
+        this.localAppeal.created_at = value;
+      },
+    },
+    status: {
+      get() {
+        return this.localAppeal.status?.is_red_details ? "Просрочено" : "Новая";
+      },
+    },
+    address: {
+      get() {
+        return this.localAppeal.premise?.address
+          ? this.localAppeal.premise?.address
+          : "";
+      },
+      set(value) {
+        if (!this.localAppeal.premise?.address)
+          this.localAppeal.premise.address = {};
+        this.localAppeal.premise.address = value;
+      },
+    },
+    apartment: {
+      get() {
+        return this.localAppeal.apartment?.number
+          ? this.localAppeal.apartment?.number
+          : "";
+      },
+      set(value) {
+        if (!this.localAppeal.apartment?.number)
+          this.localAppeal.apartment.number = {};
+        this.localAppeal.apartment.number = value;
+      },
+    },
+    due_date: {
+      get() {
+        return this.localAppeal.due_date ? this.localAppeal.due_date : "";
+      },
+      set(value) {
+        if (!this.localAppeal.due_date) this.created_at.due_date = {};
+        this.localAppeal.due_date = value;
+      },
+    },
     lastName: {
       get() {
         return this.localAppeal.applicant
@@ -160,7 +286,7 @@ export default {
     },
     dueDate: {
       get() {
-        return this.localAppeal.due_date || "";
+        return this.localAppeal.due_date ? this.localAppeal.due_date : "";
       },
       set(value) {
         this.localAppeal.due_date = value;
@@ -178,6 +304,15 @@ export default {
     },
     saveAppeal() {
       this.$emit("save-appeal", this.localAppeal);
+      console.log("save");
+      this.closeModal();
+    },
+    formatDate(dateString, type) {
+      if (type === "due-date") {
+        return format(new Date(dateString), "yyyy-MM-dd'T'hh:mm");
+      }
+      if (!dateString) return "нет информации";
+      return format(new Date(dateString), "dd.MM.yyyy");
     },
   },
 };
@@ -244,6 +379,14 @@ export default {
         font-weight: 400;
         line-height: 20px;
         text-underline-position: from-font;
+      }
+
+      .red-status {
+        color: red;
+      }
+
+      .green-status {
+        color: green;
       }
     }
 

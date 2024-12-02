@@ -18,12 +18,12 @@ export default new Vuex.Store({
       state.appeals = appeals;
     },
     ADD_APPEAL(state, appeal) {
-      state.appeals.push(appeal); // Добавление новой заявки в state
+      state.appeals.push(appeal);
     },
     UPDATE_APPEAL(state, updatedAppeal) {
       const index = state.appeals.findIndex((a) => a.id === updatedAppeal.id);
       if (index !== -1) {
-        Vue.set(state.appeals, index, updatedAppeal); // Обновление заявки в state
+        Vue.set(state.appeals, index, updatedAppeal);
       }
     },
   },
@@ -49,6 +49,7 @@ export default new Vuex.Store({
           }
         );
         console.log(response.data.results);
+        // console.log(response.data.results.at(0).number + 1);
         commit("SET_APPEALS", response.data.results);
       } catch (error) {
         console.error(error);

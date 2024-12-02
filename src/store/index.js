@@ -57,6 +57,7 @@ export default new Vuex.Store({
     },
     async createAppeal({ state, commit }, appeal) {
       try {
+        console.log("Отправка POST запроса на создание:", appeal);
         const response = await axios.post(
           "https://dev.moydomonline.ru/api/appeals/v1.0/appeals/",
           appeal,
@@ -66,11 +67,12 @@ export default new Vuex.Store({
         );
         commit("ADD_APPEAL", response.data);
       } catch (error) {
-        console.error("Ошибка при создании заявки", error);
+        console.error("Ошибка при создании заявки", error.response);
       }
     },
     async updateAppeal({ state, commit }, appeal) {
       try {
+        console.log("Отправка PUT запроса на обновление:", appeal);
         const response = await axios.put(
           `https://dev.moydomonline.ru/api/appeals/v1.0/appeals/${appeal.id}/`,
           appeal,
@@ -80,7 +82,7 @@ export default new Vuex.Store({
         );
         commit("UPDATE_APPEAL", response.data);
       } catch (error) {
-        console.error("Ошибка при обновлении заявки", error);
+        console.error("Ошибка при обновлении заявки", error.response);
       }
     },
   },

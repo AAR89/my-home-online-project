@@ -40,40 +40,65 @@
         <section class="modal-fields">
           <div class="input-block">
             <p class="input-block-title">Дом</p>
-            <input class="modal-fields-inputs" type="text" />
+            <input class="modal-fields-inputs" type="text" v-model="address" />
           </div>
           <div class="input-block">
             <p class="input-block-title">Квартира</p>
-            <input class="modal-fields-inputs" type="number" min="1" />
+            <input
+              class="modal-fields-inputs"
+              type="number"
+              min="1"
+              v-model="apartment"
+            />
           </div>
           <div class="input-block">
             <p class="input-block-title">Срок</p>
-            <input class="modal-fields-inputs" type="datetime-local" />
+            <input
+              class="modal-fields-inputs"
+              type="datetime-local"
+              :v-model="formatDate(due_date, 'due-date')"
+            />
           </div>
         </section>
         <section class="modal-fields">
           <div class="input-block">
             <p class="input-block-title">Фамилия</p>
-            <input class="modal-fields-inputs-contact" type="text" />
+            <input
+              class="modal-fields-inputs-contact"
+              type="text"
+              v-model="lastName"
+            />
           </div>
           <div class="input-block">
             <p class="input-block-title">Имя</p>
-            <input class="modal-fields-inputs-contact" type="text" />
+            <input
+              class="modal-fields-inputs-contact"
+              type="text"
+              v-model="firstName"
+            />
           </div>
           <div class="input-block">
             <p class="input-block-title">Отчество</p>
-            <input class="modal-fields-inputs-contact" type="text" />
+            <input
+              class="modal-fields-inputs-contact"
+              type="text"
+              v-model="patronymicName"
+            />
           </div>
           <div class="input-block">
             <p class="input-block-title">Телефон</p>
-            <input class="modal-fields-inputs-contact" type="tel" />
+            <input
+              class="modal-fields-inputs-contact"
+              type="tel"
+              v-model="phone"
+            />
           </div>
         </section>
         <section class="modal-fields-description">
           <div class="input-block">
             <p class="input-block-title">Описание заявки</p>
             <textarea
-              :v-model="description"
+              v-model="description"
               id="dueDate"
               class="modal-fields-inputs-description"
               type="text"
@@ -108,7 +133,7 @@
               class="modal-fields-inputs"
               type="datetime-local"
               :v-model="formatDate(due_date, 'due-date')"
-              :value="formatDate(due_date, 'due-date')"
+              value="formatDate(due_date, 'due-date')"
             />
           </div>
         </section>
@@ -169,6 +194,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import { format } from "date-fns";
 
 export default {
@@ -180,6 +206,12 @@ export default {
   data() {
     return {
       localAppeal: { ...this.appealToEdit },
+      applicant: this.appealToEdit?.applicant || {
+        first_name: "",
+        last_name: "",
+        patronymic_name: "",
+        phone: "",
+      },
     };
   },
   computed: {
@@ -190,10 +222,9 @@ export default {
     },
     created_at: {
       get() {
-        return this.localAppeal.created_at ? this.localAppeal.created_at : "";
+        return this.localAppeal.created_at || "";
       },
       set(value) {
-        if (!this.localAppeal.created_at) this.created_at.applicant = {};
         this.localAppeal.created_at = value;
       },
     },
@@ -204,14 +235,12 @@ export default {
     },
     address: {
       get() {
-        return this.localAppeal.premise?.address
-          ? this.localAppeal.premise?.address
-          : "";
+        return this.localAppeal.premise?.address || "";
       },
       set(value) {
-        if (!this.localAppeal.premise?.address)
-          this.localAppeal.premise.address = {};
-        this.localAppeal.premise.address = value;
+        if (!this.localAppeal.premise)
+          this.localAppeal.premise = { address: value };
+        else this.localAppeal.premise.address = value;
       },
     },
     apartment: {
@@ -228,10 +257,9 @@ export default {
     },
     due_date: {
       get() {
-        return this.localAppeal.due_date ? this.localAppeal.due_date : "";
+        return this.localAppeal.due_date || "";
       },
       set(value) {
-        if (!this.localAppeal.due_date) this.created_at.due_date = {};
         this.localAppeal.due_date = value;
       },
     },
@@ -302,20 +330,55 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["createAppeal", "updateAppeal"]),
     closeModal() {
       this.$emit("close");
     },
     saveAppeal() {
-      this.$emit("save-appeal", this.localAppeal);
-      console.log("save");
-      this.closeModal();
+      const appeal = {
+        apartment: this.localAppeal.apartment || null,
+        applicant: {
+          first_name: this.localAppeal.firstName || "",
+          last_name: this.localAppeal.lastName || "",
+          patronymic_name: this.localAppeal.patronymicName || "",
+          phone: this.localAppeal.phone || "",
+        },
+        created_at: new Date().toISOString(),
+        description: this.localAppeal.description || "",
+        due_date: this.localAppeal.due_date || null,
+        premise: this.localAppeal.address || "", //
+        status: this.localAppeal.status || "Новый",
+      };
+
+      this.$store
+        .dispatch("createAppeal", appeal)
+        .then(() => {
+          console.log("Заявка успешно создана");
+          this.closeModal();
+        })
+        .catch((error) => {
+          console.error("Ошибка при создании заявки", error);
+        });
     },
+
     formatDate(dateString, type) {
       if (type === "due-date") {
         return format(new Date(dateString), "yyyy-MM-dd'T'hh:mm");
       }
       if (!dateString) return "нет информации";
       return format(new Date(dateString), "dd.MM.yyyy");
+    },
+    async handleSave() {
+      try {
+        if (this.isEditMode) {
+          await this.updateAppeal(this.localAppeal);
+        } else {
+          await this.createAppeal(this.localAppeal);
+        }
+        this.$emit("close");
+      } catch (error) {
+        console.error("Ошибка при сохранении заявки", error);
+      }
     },
   },
 };

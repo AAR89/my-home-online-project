@@ -148,7 +148,7 @@ export default {
   },
   data() {
     return {
-      isModalVisible: true,
+      isModalVisible: false,
       isEditMode: false,
       appealToEdit: null,
       currentPage: 1,

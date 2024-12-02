@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
-  <div class="container">
+  <div class="login-container">
     <div class="login">
       <div>
         <div class="login-title">Авторизация</div>
@@ -103,14 +103,21 @@ export default {
 <!-- eslint-disable prettier/prettier -->
 
 <style scoped lang="scss">
-.container {
+.main {
+  width: 100%;
+}
+
+.login-containerground {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  background: url("../../public/login_background.jpg") center center no-repeat
+    fixed;
   width: 100vw;
-  background-image: url("../../public/login_background.jpg");
+  height: 100vh;
   background-size: cover;
+  margin: 0;
+  padding: 0;
 }
 
 .login {

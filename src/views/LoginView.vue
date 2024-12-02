@@ -107,7 +107,7 @@ export default {
   width: 100%;
 }
 
-.login-containerground {
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;

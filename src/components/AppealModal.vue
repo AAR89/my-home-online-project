@@ -36,7 +36,7 @@
           {{ "Новая" }}
         </h1>
       </header>
-      <div v-show="!isEditMode" class="editMode-container">
+      <div class="editMode-container">
         <section class="modal-fields">
           <div class="input-block">
             <p class="input-block-title">Дом</p>
@@ -59,84 +59,6 @@
               :v-model="formatDate(due_date, 'due-date')"
               :value="formatDate(due_date, 'due-date')"
             /> -->
-            <date-picker
-              type="datetime"
-              :format="'DD.MM.YYYY HH:mm'"
-              :lang="ru"
-              v-model="due_date"
-              value="due_date"
-            />
-          </div>
-        </section>
-        <section class="modal-fields">
-          <div class="input-block">
-            <p class="input-block-title">Фамилия</p>
-            <input
-              class="modal-fields-inputs-contact"
-              type="text"
-              v-model="lastName"
-            />
-          </div>
-          <div class="input-block">
-            <p class="input-block-title">Имя</p>
-            <input
-              class="modal-fields-inputs-contact"
-              type="text"
-              v-model="firstName"
-            />
-          </div>
-          <div class="input-block">
-            <p class="input-block-title">Отчество</p>
-            <input
-              class="modal-fields-inputs-contact"
-              type="text"
-              v-model="patronymicName"
-            />
-          </div>
-          <div class="input-block">
-            <p class="input-block-title">Телефон</p>
-            <input
-              class="modal-fields-inputs-contact"
-              type="tel"
-              v-model="phone"
-            />
-          </div>
-        </section>
-        <section class="modal-fields-description">
-          <div class="input-block">
-            <p class="input-block-title">Описание заявки</p>
-            <textarea
-              v-model="description"
-              id="description"
-              class="modal-fields-inputs-description"
-              type="text"
-            />
-          </div>
-        </section>
-        <section class="modal-button-block">
-          <button type="submit" class="modal-button-block-save">
-            {{ "Создать" }}
-          </button>
-        </section>
-      </div>
-
-      <div v-show="isEditMode" class="editMode-container">
-        <section class="modal-fields">
-          <div class="input-block">
-            <p class="input-block-title">Дом</p>
-            <input class="modal-fields-inputs" type="text" v-model="address" />
-          </div>
-          <div class="input-block">
-            <p class="input-block-title">Квартира</p>
-            <input
-              class="modal-fields-inputs"
-              type="number"
-              v-model="apartment"
-              min="1"
-            />
-          </div>
-          <div class="input-block">
-            <p class="input-block-title">Срок</p>
             <!-- <input
               class="modal-fields-inputs"
               type="datetime-local"
@@ -145,7 +67,7 @@
             <date-picker
               type="datetime"
               :format="'DD.MM.YYYY HH:mm'"
-              :lang="ru"
+              lang="ru"
               v-model="due_date"
               value="due_date"
             />
@@ -170,7 +92,6 @@
           </div>
           <div class="input-block">
             <p class="input-block-title">Отчество</p>
-
             <input
               class="modal-fields-inputs-contact"
               type="text"
@@ -199,7 +120,7 @@
         </section>
         <section class="modal-button-block">
           <button type="submit" class="modal-button-block-save">
-            {{ "Сохранить" }}
+            {{ isEditMode ? "Сохранить" : "Создать" }}
           </button>
         </section>
       </div>
@@ -209,6 +130,7 @@
 
 <script>
 import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/locale/ru";
 import "vue2-datepicker/index.css";
 import { mapActions } from "vuex";
 import { format } from "date-fns";
@@ -279,7 +201,6 @@ export default {
         return this.localAppeal.due_date || "";
       },
       set(value) {
-        console.log(value);
         this.localAppeal.due_date = value;
       },
     },
@@ -386,7 +307,8 @@ export default {
     formatDate(dateString, type) {
       if (type === "due-date") {
         console.log(dateString);
-        return format(new Date(dateString), "DD.MM.YYYY HH:mm");
+        return dateString;
+        // return format(new Date(dateString), "DD.MM.YYYY HH:mm");
       }
       if (!dateString) return "нет информации";
       return format(new Date(dateString), "dd.MM.yyyy");
@@ -514,6 +436,10 @@ export default {
 
         ::v-deep .mx-input {
           box-shadow: none;
+        }
+
+        ::v-deep .mx-icon-calendar {
+          display: none;
         }
 
         .modal-fields-inputs:focus,

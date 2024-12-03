@@ -44,7 +44,9 @@
               <td>
                 {{
                   appeal.premise?.address && appeal.apartment?.label
-                    ? appeal.premise?.address + " ," + appeal.apartment?.label
+                    ? appeal.premise?.address +
+                      ", кв." +
+                      appeal.apartment?.number
                     : "нет информации"
                 }}
               </td>
@@ -52,10 +54,13 @@
                 {{
                   appeal.applicant?.first_name ||
                   appeal.applicant?.last_name ||
+                  appeal.applicant?.patronymic_name ||
                   appeal.applicant?.username
                     ? appeal.applicant?.first_name +
                       " " +
                       appeal.applicant?.last_name +
+                      " " +
+                      appeal.applicant?.patronymic_name +
                       " " +
                       appeal.applicant?.username
                     : "нет информации"
@@ -71,6 +76,8 @@
                 </span>
               </td>
               <td>{{ formatDate(appeal.due_date, "due-date") }}</td>
+              <td></td>
+
               <td
                 :class="{
                   'red-status': appeal.status.is_red_details,
@@ -136,6 +143,7 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { format } from "date-fns";
+
 import AppealModal from "@/components/AppealModal.vue";
 
 export default {
@@ -224,12 +232,15 @@ export default {
 
     truncateText(text, maxLength) {
       if (!text) return "нет информации";
-      return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+      const truncated =
+        text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+
+      return truncated;
     },
 
     formatDate(dateString, type) {
       if (type === "due-date") {
-        return format(new Date(dateString), "dd.MM.yyyy hh:mm");
+        return format(new Date(dateString), "dd.MM.yyyy HH:mm");
       }
       if (!dateString) return "нет информации";
       return format(new Date(dateString), "dd.MM.yyyy");

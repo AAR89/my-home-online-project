@@ -53,10 +53,18 @@
           </div>
           <div class="input-block">
             <p class="input-block-title">Срок</p>
-            <input
+            <!-- <input
               class="modal-fields-inputs"
               type="datetime-local"
               :v-model="formatDate(due_date, 'due-date')"
+              :value="formatDate(due_date, 'due-date')"
+            /> -->
+            <date-picker
+              type="datetime"
+              :format="'DD.MM.YYYY HH:mm'"
+              :lang="ru"
+              v-model="due_date"
+              value="due_date"
             />
           </div>
         </section>
@@ -99,7 +107,7 @@
             <p class="input-block-title">Описание заявки</p>
             <textarea
               v-model="description"
-              id="dueDate"
+              id="description"
               class="modal-fields-inputs-description"
               type="text"
             />
@@ -129,11 +137,17 @@
           </div>
           <div class="input-block">
             <p class="input-block-title">Срок</p>
-            <input
+            <!-- <input
               class="modal-fields-inputs"
               type="datetime-local"
-              :v-model="formatDate(due_date, 'due-date')"
-              value="formatDate(due_date, 'due-date')"
+              v-model="due_date"
+            /> -->
+            <date-picker
+              type="datetime"
+              :format="'DD.MM.YYYY HH:mm'"
+              :lang="ru"
+              v-model="due_date"
+              value="due_date"
             />
           </div>
         </section>
@@ -177,7 +191,7 @@
             <p class="input-block-title">Описание заявки</p>
             <textarea
               v-model="description"
-              id="dueDate"
+              id="description"
               class="modal-fields-inputs-description"
               type="text"
             />
@@ -194,10 +208,15 @@
 </template>
 
 <script>
+import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/index.css";
 import { mapActions } from "vuex";
 import { format } from "date-fns";
 
 export default {
+  components: {
+    DatePicker,
+  },
   props: {
     isVisible: Boolean,
     isEditMode: Boolean,
@@ -245,14 +264,14 @@ export default {
     },
     apartment: {
       get() {
-        return this.localAppeal.apartment?.number
-          ? this.localAppeal.apartment?.number
-          : "";
+        return this.localAppeal.apartment?.number || "";
       },
       set(value) {
-        if (!this.localAppeal.apartment?.number)
-          this.localAppeal.apartment.number = {};
-        this.localAppeal.apartment.number = value;
+        if (!this.localAppeal.apartment) {
+          this.localAppeal.apartment = { number: value };
+        } else {
+          this.localAppeal.apartment.number = value;
+        }
       },
     },
     due_date: {
@@ -260,6 +279,7 @@ export default {
         return this.localAppeal.due_date || "";
       },
       set(value) {
+        console.log(value);
         this.localAppeal.due_date = value;
       },
     },
@@ -309,7 +329,7 @@ export default {
     },
     description: {
       get() {
-        return this.localAppeal.description ? this.localAppeal.description : "";
+        return this.localAppeal.description || "";
       },
       set(value) {
         this.localAppeal.description = value;
@@ -338,15 +358,17 @@ export default {
       const appeal = {
         apartment: this.localAppeal.apartment || null,
         applicant: {
-          first_name: this.localAppeal.firstName || "",
-          last_name: this.localAppeal.lastName || "",
-          patronymic_name: this.localAppeal.patronymicName || "",
-          phone: this.localAppeal.phone || "",
+          first_name: this.localAppeal.applicant.first_name || "",
+          last_name: this.localAppeal.applicant.last_name || "",
+          patronymic_name: this.localAppeal.applicant.patronymic_name || "",
+          phone: this.localAppeal.applicant.phone || "",
         },
         created_at: new Date().toISOString(),
         description: this.localAppeal.description || "",
-        due_date: this.localAppeal.due_date || null,
-        premise: this.localAppeal.address || "", //
+        due_date: this.localAppeal.due_date
+          ? new Date(this.localAppeal.due_date).toISOString()
+          : null,
+        premise: this.localAppeal.premise.address || "",
         status: this.localAppeal.status || "Новый",
       };
 
@@ -363,11 +385,13 @@ export default {
 
     formatDate(dateString, type) {
       if (type === "due-date") {
-        return format(new Date(dateString), "yyyy-MM-dd'T'hh:mm");
+        console.log(dateString);
+        return format(new Date(dateString), "DD.MM.YYYY HH:mm");
       }
       if (!dateString) return "нет информации";
       return format(new Date(dateString), "dd.MM.yyyy");
     },
+
     async handleSave() {
       try {
         if (this.isEditMode) {
@@ -475,16 +499,21 @@ export default {
 
         .modal-fields-inputs,
         .modal-fields-inputs-contact,
-        .modal-fields-inputs-description {
+        .modal-fields-inputs-description,
+        ::v-deep .mx-input {
           width: 215px;
           height: 28px;
           padding: 0px;
-          border: none;
-          border-bottom: 1px solid #cccccc;
+          border: none !important;
+          border-bottom: 1px solid #cccccc !important;
           font-family: Roboto;
           font-size: 14px;
           font-weight: 400;
           color: #333333;
+        }
+
+        ::v-deep .mx-input {
+          box-shadow: none;
         }
 
         .modal-fields-inputs:focus,

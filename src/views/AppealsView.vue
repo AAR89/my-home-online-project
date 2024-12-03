@@ -76,7 +76,6 @@
                 </span>
               </td>
               <td>{{ formatDate(appeal.due_date, "due-date") }}</td>
-              <td></td>
 
               <td
                 :class="{
